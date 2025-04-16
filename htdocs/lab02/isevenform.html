@@ -1,0 +1,12 @@
+<html>
+    <body
+    <?php if ($message != ""): ?>
+        <p><?php echo htmlspecialchars($message); ?></p>
+    <?php endif; ?>
+    
+<form action = "iseven.php" method = "GET">
+number: <input type = "number" name = "number">
+<input type = "submit">
+</form>
+</body>
+</html>

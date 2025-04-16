@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS status (
+  status_code VARCHAR(5) PRIMARY KEY,
+  status_text VARCHAR(255) NOT NULL,
+  share_option VARCHAR(20),
+  date_posted VARCHAR(20),
+  permission VARCHAR(100)
+);

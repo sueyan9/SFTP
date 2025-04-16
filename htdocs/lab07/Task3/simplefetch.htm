@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Fetch with MySQL</title>
+    <script type="text/javascript" src="simpleajax.js"></script>
+</head>
+<body>
+    <h1>Fetch Email from Database</h1>
+    <form>
+        <label for="namefield">User Name:</label>
+        <input type="text" name="namefield" id="namefield"><br>
+        <label for="pwdfield">Password:</label>
+        <input type="password" name="pwdfield" id="pwdfield"><br><br>
+        <input name="submit" type="button" onClick="getData('data.php', 'targetDiv', namefield.value, pwdfield.value)" value="Fetch Email">
+    </form>
+
+    <div id="targetDiv">
+        <p>The fetched data will go here.</p>
+    </div>
+</body>
+</html>
