@@ -5,3 +5,7 @@ CREATE TABLE IF NOT EXISTS status (
   date_posted VARCHAR(20),
   permission VARCHAR(100)
 );
+SELECT * FROM status WHERE status_code = 'S0001';
+
+INSERT INTO status (status_code, status_text, share_option, date_posted, permission)
+VALUES ('S0001', 'This is a test status!!!', 'Public', '29/04/2025', 'Comment,Share');

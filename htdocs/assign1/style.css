@@ -1,0 +1,68 @@
+  .border-box {
+    border: 1px solid #000;
+    padding: 20px;
+  }
+
+  .bottom-right {
+    text-align: right;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 40px auto;
+    line-height: 1.6;
+  }
+  label {
+    display: block;
+    margin-top: 15px;
+  }
+  input[type="text"], input[type="date"] {
+    width: 100%;
+    padding: 8px;
+  }
+  .checkbox-group, .radio-group {
+    margin-top: 8px;
+  }
+  
+  .checkbox-group label, .radio-group label {
+    display: inline-block;
+    margin-right: 15px;
+  }
+
+  .form-buttons {
+    margin-top: 20px;
+  }
+
+  .content {
+    border: 1px solid #ccc;
+    padding: 20px;
+    max-width: 600px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+  }
+
+  .box {
+    border: 1px solid black;
+    padding: 20px;
+    max-width: 600px;
+    margin: 20px auto;
+  }
+
+  .links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  .links a {
+    text-decoration: underline;
+    color: blue;
+  }
