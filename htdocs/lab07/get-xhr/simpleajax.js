@@ -4,8 +4,7 @@ function getData(dataSource, divID, aName, aPwd)  {
     if(xhr) {
 	    var place = document.getElementById(divID);
 	    var url = dataSource+"?name="+aName+"&pwd="+aPwd;
-		// modify url
-		//url = "http://localhost:8000/" + url
+		
 	    xhr.open("GET", url, true);
 	    xhr.onreadystatechange = function() {
 		    alert(xhr.readyState);

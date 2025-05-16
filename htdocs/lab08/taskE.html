@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Database</title>
+</head>
+<body>
+    <h2>Email Record Demo</h2>
+    <pre id="output"></pre>
+
+    <script>
+        // 1. Define the Record class
+        class EmailRecord {
+            constructor(name, email) {
+                this.name = name;
+                this.email = email;
+            }
+
+            print() {
+                return `${this.name} | ${this.email}`;
+            }
+        }
+
+        // 2. Instantiate two objects
+        const record1 = new EmailRecord("Alice", "alice@example.com");
+        const record2 = new EmailRecord("Bob", "bob@example.com");
+
+        // 3. Create a record using JSON
+        const jsonObject = JSON.parse('{"name":"Charlie", "email":"charlie@example.com"}');
+
+        // Check if jsonObject is instance of EmailRecord
+        const isEmailRecord = jsonObject instanceof EmailRecord;
+
+        // 4. Print the records
+        const output = document.getElementById("output");
+        output.innerText += "Two instances:\n";
+        output.innerText += record1.print() + "\n";
+        output.innerText += record2.print() + "\n\n";
+
+        output.innerText += "JSON object:\n";
+        output.innerText += `${jsonObject.name} | ${jsonObject.email}\n`;
+        output.innerText += `Is JSON object an instance of EmailRecord? ${isEmailRecord}\n\n`;
+
+        // 5. Extra: define EmailDatabase class
+        class EmailDatabase {
+            constructor() {
+                this.records = [];
+            }
+
+            add(record) {
+                this.records.push(record);
+            }
+
+            printAll() {
+                return this.records.map(r => r.print()).join("\n");
+            }
+        }
+
+        // 6. Create database, add 3 records, and print all
+        const db = new EmailDatabase();
+        db.add(record1);
+        db.add(record2);
+        db.add(new EmailRecord(jsonObject.name, jsonObject.email)); // wrap JSON into class
+
+        output.innerText += "Full Database:\n" + db.printAll();
+    </script>
+</body>
+</html>

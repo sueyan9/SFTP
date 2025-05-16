@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Split and Print Words</title>
+</head>
+<body>
+    <button onclick="printWords()">Enter and Split Words</button>
+    <div id="output"></div>
+
+    <script>
+    function printWords() {
+        let input = prompt("Enter a sentence with words separated by spaces:", "This is a test");
+        if (input) {
+            let words = input.trim().split(" ");
+            let outputDiv = document.getElementById("output");
+            outputDiv.innerHTML = ""; // empty the output div before appending new content
+            for (let word of words) {
+                outputDiv.innerHTML += word + "<br>";
+            }
+        }
+    }
+    </script>
+</body>
+</html>

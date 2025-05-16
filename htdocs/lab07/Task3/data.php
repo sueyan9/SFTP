@@ -1,10 +1,16 @@
 <?php
-
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Content-Type"); 
 $servername = "webdev.aut.ac.nz"; // Change this to your server name
 $username = "mng2178";
 $password = "boobtmuwrvedgmtmluwnbchzvixzuq"; // Change this to your actual password
 $dbname = "mng2178"; // Change to your database
 
+	// $servername="localhost";
+	// $username="root";
+	// $password="1965wwwW+";
+	// $dbname="db_test";
+	
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check connection

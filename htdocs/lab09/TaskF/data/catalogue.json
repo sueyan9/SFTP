@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "title": "Beginning ASP.NET with CSharp",
+        "isbn": "0764588508",
+        "price": 39.99
+    },
+    {
+        "id": 2,
+        "title": "Learning PHP, MySQL, JavaScript",
+        "isbn": "1234567890",
+        "price": 29.99
+    },
+    {
+        "id": 3,
+        "title": "Eloquent JavaScript",
+        "isbn": "9781593279509",
+        "price": 93.99
+    }
+]

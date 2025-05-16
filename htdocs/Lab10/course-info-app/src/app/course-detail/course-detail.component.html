@@ -1,0 +1,11 @@
+<div *ngIf="course">
+    <div><span>Course ID: </span>{{ course?.course_id }}</div>
+    <div><span>Course Period: </span>{{ course?.period }}</div>
+    <div><span>Course Lecturer: </span>{{ course?.lecturer }}</div>
+    <div>
+      <label>
+        Course Title:
+        <input [(ngModel)]="course.course_title" placeholder="title" />
+      </label>
+    </div>
+  </div>

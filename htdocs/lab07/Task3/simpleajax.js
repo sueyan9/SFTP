@@ -2,7 +2,7 @@ function getData(dataSource, divID, aName, aPwd) {
     var place = document.getElementById(divID);
     var requestBody = "name=" + encodeURIComponent(aName) + "&pwd=" + encodeURIComponent(aPwd);
 
-    var url = "http://localhost:8000/" + dataSource;
+    var url = dataSource;
 
     fetch(url, {
         method: 'POST',

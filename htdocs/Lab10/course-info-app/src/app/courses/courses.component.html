@@ -1,0 +1,36 @@
+<!-- <h2>{{ course.course_title }} Details</h2>
+<div><span>Course ID: </span>{{ course.course_id }}</div>
+<div><span>Course Title: </span>{{ course.course_title }}</div>
+<div><span>Semester: </span>{{ course.semester }}</div>
+<div><span>Course Lecturer: </span>{{ course.lecturer }}</div>
+<div><span>Course Period: </span>{{ course.period }}</div>
+<div>
+    <label>Course In View:
+      <input [(ngModel)]="course.course_title" placeholder="name" />
+    </label>
+  </div>
+  <div> -->
+    <h2>My Course List</h2>
+    <ul class="courses">
+      <li
+        *ngFor="let c of courses"
+        (click)="onSelect(c)"
+        [class.selected]="c === selectedCourse"
+      >
+        <span class="badge">{{ c.course_id }}</span> {{ c.course_title }}
+        <span class="text">{{ c.course_title }}</span>
+      </li>
+    </ul>
+    <app-course-detail [course]="selectedCourse"></app-course-detail>
+    
+    <!-- <div *ngIf="selectedCourse">
+      <div><span>Course ID: </span>{{ selectedCourse.course_id }}</div>
+      <div><span>Course Period: </span>{{ selectedCourse.period }}</div>
+      <div><span>Course Lecturer: </span>{{ selectedCourse.lecturer }}</div>
+      <div>
+        <label>
+          Course Title:
+          <input [(ngModel)]="selectedCourse.course_title" placeholder="title" />
+        </label>
+      </div>
+    </div> -->
