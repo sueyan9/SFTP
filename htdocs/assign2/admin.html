@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Taxi Bookings</title>
+</head>
+<body>
+  <h1>Admin - Booking Management</h1>
+  <table border="1" id="bookingsTable">
+    <thead>
+      <tr>
+        <th>Ref</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Pickup</th>
+        <th>Destination</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <script>
+    async function loadBookings() {
+      const res = await fetch('admin.php');
+      const data = await res.json();
+      const tbody = document.querySelector('#bookingsTable tbody');
+      tbody.innerHTML = '';
+      data.forEach(b => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${b.booking_ref}</td>
+            <td>${b.customer_name}</td>
+            <td>${b.phone_number}</td>
+            <td>${b.street_number} ${b.street_name}, ${b.suburb}</td>
+            <td>${b.destination_suburb}</td>
+            <td>${b.pickup_date}</td>
+            <td>${b.pickup_time}</td>
+            <td>${b.status}</td>
+            <td>
+              ${b.status === 'unassigned' ? `<button onclick="assign(${b.booking_ref})">Assign</button>` : ''}
+            </td>
+          </tr>
+        `;
+      });
+    }
+    async function assign(ref) {
+      await fetch('assign.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'ref=' + ref
+      });
+      loadBookings();
+    }
+    loadBookings();
+  </script>
+</body>
+</html>

@@ -46,16 +46,21 @@ function updateCart() {
         cartDiv.innerHTML = "";
         return;
     }
-
+    
+  let total = 0;
     cartItems.forEach(item => {
+        let itemTotal = item.price * item.quantity;
+        total += itemTotal;
+
         cartDiv.innerHTML += `
             <p>
-                ${item.title} - $${item.price} x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}
+                ${item.title} - $${item.price} x ${item.quantity} = $${itemTotal.toFixed(2)}
                 <a href="#" onclick="DeleteFromCart(${item.id})">Remove Item</a>
             </p>
         `;
     });
     // calculate total price
-    cartDiv.innerHTML += `<hr/><p><strong>Total Price : $${total.toFixed(2)}</strong></p>`;
 
+    cartDiv.innerHTML += `<hr/><p><strong>Total Price : $${total.toFixed(2)}</strong></p>`;
+    
 }

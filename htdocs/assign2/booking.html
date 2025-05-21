@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Taxi Booking</title>
+</head>
+<body>
+  <h1>Book a Taxi</h1>
+  <form id="bookingForm">
+    <label>Customer Name: <input type="text" name="cname" required></label><br>
+    <label>Phone Number: <input type="text" name="phone" required></label><br>
+    <label>Unit Number: <input type="text" name="unumber"></label><br>
+    <label>Street Number: <input type="text" name="snumber" required></label><br>
+    <label>Street Name: <input type="text" name="stname" required></label><br>
+    <label>Suburb: <input type="text" name="sbname"></label><br>
+    <label>Destination Suburb: <input type="text" name="dsbname"></label><br>
+    <label>Pick-up Date: <input type="date" name="date" required></label><br>
+    <label>Pick-up Time: <input type="time" name="time" required></label><br>
+    <button type="submit">Book Now</button>
+  </form>
+
+  <div id="confirmation"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('bookingForm');
+      const now = new Date();
+      form.date.value = now.toISOString().split('T')[0];
+      form.time.value = now.toTimeString().slice(0, 5);
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const phone = form.phone.value.trim();
+        if (!/^\d{10,12}$/.test(phone)) {
+          alert("Phone number must be 10-12 digits.");
+          return;
+        }
+
+        const pickupDateTime = new Date(`${form.date.value}T${form.time.value}`);
+        if (pickupDateTime < new Date()) {
+          alert("Pick-up time must be in the future.");
+          return;
+        }
+
+        const formData = new FormData(form);
+        const response = await fetch('booking.php', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          document.getElementById('confirmation').innerHTML =
+            `<p>Booking Confirmed!</p>
+             <p>Reference: ${result.ref}</p>
+             <p>Pickup Date: ${result.date}</p>
+             <p>Pickup Time: ${result.time}</p>`;
+        } else {
+          alert("Booking failed. Please try again.");
+        }
+      });
+    });
+  </script>
+</body>
+</html>

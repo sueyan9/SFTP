@@ -14,6 +14,6 @@
 	$sql_user="mng2178";
 	$sql_pass="boobtmuwrvedgmtmluwnbchzvixzuq";
 	$sql_db="mng2178";
-	$sql_tble="status";
+	//$sql_tble="status";
 	
 ?>
