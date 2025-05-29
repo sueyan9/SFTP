@@ -1,8 +1,13 @@
 <?php
 header("Content-Type: application/json");
 date_default_timezone_set('Pacific/Auckland');
-//debugging
-file_put_contents("debug.log", print_r($_POST, true));
+
+
+// POST only
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(["success" => false, "error" => "Invalid request method"]);
+    exit;
+}
 
 // path to DB connect file
 include('../../files/sqlinfo.inc.php');
@@ -14,7 +19,7 @@ if ($mysqli->connect_error) {
 }
 // safety function to sanitize input
 function sanitize($input) {
-    return htmlspecialchars(trim($input));
+    return htmlspecialchars(trim($input ?? ''));
 }
 // get the POST data
 $cname = sanitize($_POST['cname']);
@@ -27,13 +32,23 @@ $dsbname = sanitize($_POST['dsbname']);
 $date = sanitize($_POST['date']);
 $time = sanitize($_POST['time']);
 $bookingDT = date('Y-m-d H:i:s');
-// validate the inpu of phone number(10-12 digits)
+
+//list($day, $month, $year) = explode('/', $date);
+$parts = explode('/', $date);
+if (count($parts) !== 3) {
+    echo json_encode(["success" => false, "error" => "Invalid date format"]);
+    exit;
+}
+list($day, $month, $year) = $parts;
+$date_mysql = "$year-$month-$day";
+
+// validate the input of phone number(10-12 digits)
 if (!preg_match('/^\d{10,12}$/', $phone)) {
     echo json_encode(["success" => false, "error" => "Invalid phone number"]);
     exit;
 }
 //check the pickup time is in the future
-$pickupTime = strtotime("$date $time");
+$pickupTime = strtotime("$date_mysql $time");
 $currentTime = time();
 if ($pickupTime <= $currentTime) {
     echo json_encode(["success" => false, "error" => "Pickup time must be in the future"]);
@@ -46,10 +61,16 @@ $bookingDT = date('Y-m-d H:i:s');
 // prepare and bind the SQL statement
 $stmt = $mysqli->prepare("INSERT INTO booking (customer_name, phone_number, unit_number, street_number, street_name, 
 suburb, destination_suburb, pickup_date, pickup_time, booking_datetime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("ssssssssss", $cname, $phone, $unumber, $snumber, $stname, $sbname, $dsbname, $date, $time, $bookingDT);
+$stmt->bind_param("ssssssssss", $cname, $phone, $unumber, $snumber, $stname, $sbname, $dsbname, $date_mysql,$time, $bookingDT);
 
 if ($stmt->execute()) {
-    $ref = $mysqli->insert_id;
+    $ref_id = $mysqli->insert_id;
+    $ref = 'BRN' . str_pad($ref_id, 5, '0', STR_PAD_LEFT);
+    // Update the booking_ref in the database
+    $update_stmt = $mysqli->prepare("UPDATE booking SET booking_ref = ? WHERE id = ?");
+    $update_stmt->bind_param("si", $ref, $ref_id);
+    $update_stmt->execute();
+    $update_stmt->close();
     echo json_encode([
         "success" => true,
         "ref" => $ref,
@@ -57,6 +78,7 @@ if ($stmt->execute()) {
         "time" => $time
     ]);
 } else {
+    error_log($stmt->error);
     echo json_encode(["success" => false, "error" => $stmt->error]);
    
 }

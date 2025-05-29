@@ -2,59 +2,145 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin - Taxi Bookings</title>
+  <title>Admin - CabsOnline Taxi Bookings</title>
+  <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-  <h1>Admin - Booking Management</h1>
-  <table border="1" id="bookingsTable">
-    <thead>
-      <tr>
-        <th>Ref</th>
-        <th>Name</th>
-        <th>Phone</th>
-        <th>Pickup</th>
-        <th>Destination</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  <script>
-    async function loadBookings() {
-      const res = await fetch('admin.php');
-      const data = await res.json();
-      const tbody = document.querySelector('#bookingsTable tbody');
-      tbody.innerHTML = '';
-      data.forEach(b => {
-        tbody.innerHTML += `
+<h1>Admin - CabsOnline Booking Management</h1>
+<!-- Search Area -->
+<div class="search-section">
+  <input type="text" name="bsearch" id="bsearch" placeholder="Enter booking ref (e.g., BRN00001)">
+  <input type="button" name="sbutton" value="Search" onclick="searchBookings()">
+</div>
+<!-- Success Message Display -->
+<div id="message"></div>
+<!-- Booking Table -->
+<table border="1" id="bookingsTable">
+  <thead>
+  <tr>
+    <th>Booking Reference Number</th>
+    <th>Customer Name</th>
+    <th>Phone</th>
+    <th>Pickup Suburb</th>
+    <th>Destination Suburb</th>
+    <th>Pickup Date and Time</th>
+    <th>Status</th>
+    <th>Assign</th>
+  </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<!-- JavaScript Logic -->
+<script>
+  // Load unassigned bookings by default
+  async function loadBookings() {
+    const res = await fetch('admin.php');
+    const data = await res.json();
+    const tbody = document.querySelector('#bookingsTable tbody');
+    tbody.innerHTML = '';
+
+    data.forEach(b => {
+      const pickupDateTime = `${b.pickup_date} ${b.pickup_time}`;
+      tbody.innerHTML += `
           <tr>
             <td>${b.booking_ref}</td>
             <td>${b.customer_name}</td>
             <td>${b.phone_number}</td>
-            <td>${b.street_number} ${b.street_name}, ${b.suburb}</td>
+            <td>${b.street_number} ${b.street_name}, ${b.pickup_suburb || b.suburb}</td>
             <td>${b.destination_suburb}</td>
-            <td>${b.pickup_date}</td>
-            <td>${b.pickup_time}</td>
+            <td>${pickupDateTime}</td>
             <td>${b.status}</td>
             <td>
-              ${b.status === 'unassigned' ? `<button onclick="assign(${b.booking_ref})">Assign</button>` : ''}
+              ${b.status === 'unassigned' ? `<button onclick="assign('${b.booking_ref}')">Assign</button>` : ''}
             </td>
           </tr>
         `;
-      });
-    }
-    async function assign(ref) {
-      await fetch('assign.php', {
+    });
+  }
+
+  // Assign booking to driver
+  async function assign(ref) {
+    const messageDiv = document.getElementById('message');
+    messageDiv.innerText = '';
+    messageDiv.style.display = 'none';
+
+    try {
+      const res = await fetch('admin.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'ref=' + ref
+        body: 'ref=' + encodeURIComponent(ref)
       });
-      loadBookings();
+
+      const data = await res.json();
+
+      if (data.success) {
+        messageDiv.innerText = `Congratulations!Booking request ${ref} has been assigned!`;
+        messageDiv.style.color = 'green';
+        messageDiv.style.display = 'block';
+
+        loadBookings();
+      } else {
+        messageDiv.innerText = `Failed to assign booking: ${data.error || 'Unknown error'}`;
+        messageDiv.style.color = 'red';
+        messageDiv.style.display = 'block';
+      }
+    } catch (error) {
+      messageDiv.innerText = `Error occurred: ${error.message}`;
+      messageDiv.style.color = 'red';
+      messageDiv.style.display = 'block';
     }
+
     loadBookings();
-  </script>
+  }
+
+  // Search by booking reference
+  async function searchBookings() {
+    const bsearch = document.getElementById('bsearch').value.trim();
+    const tbody = document.querySelector('#bookingsTable tbody');
+    const messageDiv = document.getElementById('message');
+    messageDiv.innerText = '';
+    messageDiv.style.display = 'none';
+    // if search input is empty
+    if (bsearch === '') {
+      loadBookings();
+      return;
+    }
+    if (!/^BRN\d{5}$/.test(bsearch)) {
+      tbody.innerHTML = `<tr><td colspan="8" style="color:red;">❌ Invalid booking reference. Format: BRN00001</td></tr>`;
+      return;
+    }
+
+    const res = await fetch('admin.php?bsearch=' + encodeURIComponent(bsearch));
+    const data = await res.json();
+    tbody.innerHTML = '';
+
+    if (data.error || data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8">No matching records found.</td></tr>`;
+      return;
+    }
+
+    data.forEach(b => {
+      const pickupDateTime = `${b.pickup_date} ${b.pickup_time}`;
+      tbody.innerHTML += `
+          <tr>
+            <td>${b.booking_ref}</td>
+            <td>${b.customer_name}</td>
+            <td>${b.phone_number}</td>
+            <td>${b.street_number} ${b.street_name}, ${b.pickup_suburb || b.suburb}</td>
+            <td>${b.destination_suburb}</td>
+            <td>${pickupDateTime}</td>
+            <td>${b.status}</td>
+            <td>
+              ${b.status === 'unassigned' ? `<button onclick="assign('${b.booking_ref}')">Assign</button>` : ''}
+            </td>
+          </tr>
+        `;
+    });
+  }
+
+  // Initial load
+  loadBookings();
+</script>
 </body>
 </html>

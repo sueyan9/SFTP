@@ -1,5 +1,6 @@
 CREATE TABLE booking (
-    booking_ref INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_ref VARCHAR(10) UNIQUE,
     customer_name VARCHAR(100) NOT NULL,
     phone_number VARCHAR(12) NOT NULL,
     unit_number VARCHAR(10),

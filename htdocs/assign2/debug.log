@@ -1,12 +1,12 @@
 Array
 (
-    [cname] => xu
-    [phone] => 0220779060
-    [unumber] => 1
+    [cname] => alice
+    [phone] => 0220770000
+    [unumber] => 
     [snumber] => 34 
-    [stname] => ST CATHERINE CRESCENT
+    [stname] => st lucks rd
     [sbname] => AUCKLAND
     [dsbname] => hamilton
-    [date] => 2025-05-17
-    [time] => 22:42
+    [date] => 31/05/2025
+    [time] => 20:29
 )

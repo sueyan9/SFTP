@@ -1,66 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Taxi Booking</title>
+  <meta charset="UTF-8" />
+  <title>CabsOnline - Book a Taxi</title>
+  <link rel="stylesheet" href="booking.css" />
 </head>
 <body>
-  <h1>Book a Taxi</h1>
-  <form id="bookingForm">
-    <label>Customer Name: <input type="text" name="cname" required></label><br>
-    <label>Phone Number: <input type="text" name="phone" required></label><br>
-    <label>Unit Number: <input type="text" name="unumber"></label><br>
-    <label>Street Number: <input type="text" name="snumber" required></label><br>
-    <label>Street Name: <input type="text" name="stname" required></label><br>
-    <label>Suburb: <input type="text" name="sbname"></label><br>
-    <label>Destination Suburb: <input type="text" name="dsbname"></label><br>
-    <label>Pick-up Date: <input type="date" name="date" required></label><br>
-    <label>Pick-up Time: <input type="time" name="time" required></label><br>
+<div class="container">
+  <h1 style="font-size:2.2em;">CabsOnline - Book a Taxi</h1>
+  <form method="POST" action="booking.php" id="bookingForm">
+    <label>Customer Name: <input type="text" name="cname" required></label><br />
+    <label>Phone Number: <input type="text" name="phone" required></label><br />
+    <label>Unit Number: <input type="text" name="unumber"></label><br />
+    <label>Street Number: <input type="text" name="snumber" required></label><br />
+    <label>Street Name: <input type="text" name="stname" required></label><br />
+    <label>Suburb: <input type="text" name="sbname"></label><br />
+    <label>Destination Suburb: <input type="text" name="dsbname"></label><br />
+    <label>Pick-up Date: <input type="text" name="date" id="date" required placeholder="dd/mm/yyyy"></label><br />
+    <label>Pick-up Time: <input type="time" name="time" id="time" required></label><br />
     <button type="submit">Book Now</button>
   </form>
 
-  <div id="confirmation"></div>
+  <div id="reference"></div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("bookingForm");
+    const dateInput = document.getElementById("date");
+    const timeInput = document.getElementById("time");
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('bookingForm');
-      const now = new Date();
-      form.date.value = now.toISOString().split('T')[0];
-      form.time.value = now.toTimeString().slice(0, 5);
+    const pad = (n) => (n < 10 ? "0" + n : n);
+    const now = new Date();
+    const dd = pad(now.getDate());
+    const mm = pad(now.getMonth() + 1);
+    const yyyy = now.getFullYear();
+    const todayDMY = `${dd}/${mm}/${yyyy}`;
+    const timeNow = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    // Set default date as dd/mm/yyyy
+    dateInput.value = todayDMY;
+    timeInput.value = timeNow;
 
-        const phone = form.phone.value.trim();
-        if (!/^\d{10,12}$/.test(phone)) {
-          alert("Phone number must be 10-12 digits.");
-          return;
-        }
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-        const pickupDateTime = new Date(`${form.date.value}T${form.time.value}`);
-        if (pickupDateTime < new Date()) {
-          alert("Pick-up time must be in the future.");
-          return;
-        }
+      const dateValue = dateInput.value.trim();
+      if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dateValue)) {
+        alert("Date must be in dd/mm/yyyy format.");
+        return;
+      }
 
-        const formData = new FormData(form);
-        const response = await fetch('booking.php', {
-          method: 'POST',
-          body: formData
+      const phone = form.phone.value.trim();
+      if (!/^\d{10,12}$/.test(phone)) {
+        alert("Phone number must be 10-12 digits.");
+        return;
+      }
+
+      const timeValue = timeInput.value;
+      const [day, month, year] = dateValue.split("/");
+      // Create a Date object for pickup datetime to check if it's future
+      const pickupDateTime = new Date(`${year}-${month}-${day}T${timeValue}`);
+      if (pickupDateTime < new Date()) {
+        alert("Pick-up time must be in the future.");
+        return;
+      }
+
+      const formData = new FormData(form);
+      // Overwrite the date field to keep dd/mm/yyyy format for backend
+      formData.set("date", dateValue);
+
+      try {
+        const response = await fetch("booking.php", {
+          method: "POST",
+          body: formData,
         });
-
         const result = await response.json();
+
         if (result.success) {
-          document.getElementById('confirmation').innerHTML =
-            `<p>Booking Confirmed!</p>
-             <p>Reference: ${result.ref}</p>
-             <p>Pickup Date: ${result.date}</p>
-             <p>Pickup Time: ${result.time}</p>`;
+          document.getElementById(
+            "reference"
+          ).innerHTML = `<div style="border:1px solid #000;padding:20px;">
+                <h2>Thank you for your booking!</h2>
+                <p>Booking reference number: <b>${result.ref}</b></p>
+                <p>Pickup time: <b>${result.time}</b></p>
+                <p>Pickup date: <b>${result.date}</b></p>
+              </div>`;
         } else {
-          alert("Booking failed. Please try again.");
+          alert("Booking failed: " + (result.error || "Please try again."));
         }
-      });
+      } catch (err) {
+        alert("Network or server error: " + err.message);
+      }
     });
-  </script>
+  });
+</script>
 </body>
 </html>
