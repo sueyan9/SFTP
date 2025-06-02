@@ -1,3 +1,14 @@
+<!--
+  File: booking.html
+  Student : Xu Yan
+  Student ID: mng2178
+  Description: This HTML file provides a web form for taxi booking.
+    It includes ：
+      - Client-side validation for phone number, date format,
+                    and future pickup time
+      - Submits form data to the server via AJAX (booking.php)
+      - Displays the booking reference and pickup details on success
+  -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,8 +18,8 @@
 </head>
 <body>
 <div class="container">
-  <h1 style="font-size:2.2em;">CabsOnline - Book a Taxi</h1>
-  <form method="POST" action="booking.php" id="bookingForm">
+  <h1>CabsOnline - Book a Taxi</h1>
+  <form id="bookingForm">
     <label>Customer Name: <input type="text" name="cname" required></label><br />
     <label>Phone Number: <input type="text" name="phone" required></label><br />
     <label>Unit Number: <input type="text" name="unumber"></label><br />
@@ -24,11 +35,12 @@
   <div id="reference"></div>
 </div>
 <script>
+  // Run logic after DOM is fully loaded
   document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("bookingForm");
     const dateInput = document.getElementById("date");
     const timeInput = document.getElementById("time");
-
+// Helper function to pad single digits with a leading zero
     const pad = (n) => (n < 10 ? "0" + n : n);
     const now = new Date();
     const dd = pad(now.getDate());
@@ -40,10 +52,10 @@
     // Set default date as dd/mm/yyyy
     dateInput.value = todayDMY;
     timeInput.value = timeNow;
-
+    // Handle form submission with client-side validation and AJAX
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-
+// Validate pickup date (must be in dd/mm/yyyy format)
       const dateValue = dateInput.value.trim();
       if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dateValue)) {
         alert("Date must be in dd/mm/yyyy format.");
@@ -51,6 +63,7 @@
       }
 
       const phone = form.phone.value.trim();
+      // Validate phone number (must be 10 to 12 digits)
       if (!/^\d{10,12}$/.test(phone)) {
         alert("Phone number must be 10-12 digits.");
         return;
@@ -77,9 +90,9 @@
         const result = await response.json();
 
         if (result.success) {
-          document.getElementById(
-            "reference"
-          ).innerHTML = `<div style="border:1px solid #000;padding:20px;">
+            const refDiv = document.getElementById("reference");
+            refDiv.classList.add("show");
+            refDiv.innerHTML = `<div>
                 <h2>Thank you for your booking!</h2>
                 <p>Booking reference number: <b>${result.ref}</b></p>
                 <p>Pickup time: <b>${result.time}</b></p>

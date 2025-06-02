@@ -1,18 +1,32 @@
 <?php
+/*
+ * Filename:booking.php
+ * Student : Xu Yan
+ * Student ID: mng2178
+ * Description:
+  *     This PHP script handles booking submissions via POST requests.
+  *     It performs the following operations:
+  *       - Validates and sanitizes all input fields
+  *       - Ensures pickup time is in the future
+  *       - Checks for duplicate bookings by phone, date, and time
+  *       - Inserts a new booking into the MySQL database
+  *       - Generates a unique booking reference (e.g., BRN00001)
+  *       - Returns a JSON response with status and reference ID
+ Notes:
+  *     - This script requires the sqlinfo.inc.php configuration file.
+ */
 header("Content-Type: application/json");
 date_default_timezone_set('Pacific/Auckland');
-
-
-// POST only
+// Allow POST only
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
     echo json_encode(["success" => false, "error" => "Invalid request method"]);
     exit;
 }
-
-// path to DB connect file
+// Include database config
 include('../../files/sqlinfo.inc.php');
-// connect to the database
 $mysqli = new mysqli($sql_host, $sql_user, $sql_pass, $sql_db);
+// Check DB connection
 if ($mysqli->connect_error) {
     echo json_encode(["success" => false, "error" => "Connection failed"]);
     exit;
@@ -32,14 +46,22 @@ $dsbname = sanitize($_POST['dsbname']);
 $date = sanitize($_POST['date']);
 $time = sanitize($_POST['time']);
 $bookingDT = date('Y-m-d H:i:s');
-
-//list($day, $month, $year) = explode('/', $date);
+// Basic input length validation
+if (strlen($cname) > 100 || strlen($stname) > 100 || strlen($sbname) > 100 || strlen($dsbname) > 100) {
+    echo json_encode(["success" => false, "error" => "Input too long"]);
+    exit;
+}
+// Validate date format
 $parts = explode('/', $date);
 if (count($parts) !== 3) {
     echo json_encode(["success" => false, "error" => "Invalid date format"]);
     exit;
 }
 list($day, $month, $year) = $parts;
+if (!checkdate((int)$month, (int)$day, (int)$year)) {
+    echo json_encode(["success" => false, "error" => "Invalid date"]);
+    exit;
+}
 $date_mysql = "$year-$month-$day";
 
 // validate the input of phone number(10-12 digits)
@@ -48,17 +70,28 @@ if (!preg_match('/^\d{10,12}$/', $phone)) {
     exit;
 }
 //check the pickup time is in the future
-$pickupTime = strtotime("$date_mysql $time");
-$currentTime = time();
-if ($pickupTime <= $currentTime) {
+$pickupTimestamp = strtotime("$date_mysql $time");
+if ($pickupTimestamp === false || $pickupTimestamp <= time()) {
     echo json_encode(["success" => false, "error" => "Pickup time must be in the future"]);
     exit;
 }
-//create the booking timestamp
-$bookingDT = date('Y-m-d H:i:s');
 
+// check if duplicate submit
+$check_stmt = $mysqli->prepare("SELECT id FROM booking WHERE phone_number = ? AND pickup_date = ? AND pickup_time = ?");
+$check_stmt->bind_param("sss", $phone, $date_mysql, $time);
+$check_stmt->execute();
+$check_stmt->store_result();
+
+if ($check_stmt->num_rows > 0) {
+    echo json_encode(["success" => false, "error" => "A booking with the same phone and time already exists."]);
+    $check_stmt->close();
+    $mysqli->close();
+    exit;
+}
+$check_stmt->close();
 
 // prepare and bind the SQL statement
+$bookingDT = date('Y-m-d H:i:s');
 $stmt = $mysqli->prepare("INSERT INTO booking (customer_name, phone_number, unit_number, street_number, street_name, 
 suburb, destination_suburb, pickup_date, pickup_time, booking_datetime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 $stmt->bind_param("ssssssssss", $cname, $phone, $unumber, $snumber, $stname, $sbname, $dsbname, $date_mysql,$time, $bookingDT);

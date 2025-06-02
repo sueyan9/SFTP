@@ -58,10 +58,18 @@ function getData(responseXML) {
     } else {
         var books = responseXML.getElementsByTagName("book");
         cartDisplay.innerHTML = "";
+        var total = 0;
+
         for (var i = 0; i < books.length; i++) {
             var bookTitle = books[i].getElementsByTagName("title")[0].textContent;
             var bookPrice = books[i].getElementsByTagName("price")[0].textContent;
             var bookQuantity = books[i].getElementsByTagName("quantity")[0].textContent;
+
+            bookPrice = parseFloat(bookPrice.replace('$', ''));
+            bookQuantity = parseInt(bookQuantity);
+
+            var itemTotal = bookPrice * bookQuantity;
+            total += itemTotal;
 
             cartDisplay.innerHTML += 
             bookTitle + " " 
@@ -71,6 +79,8 @@ function getData(responseXML) {
                 "<a href='#' onclick='DeleteFromCart(" + (i + 1) + ")'>Remove Item</a><br>";
                
         }
+        cartDisplay.innerHTML += "<br><strong>Total: $" + total.toFixed(2) + "</strong>";
+
     }
 }
 

@@ -1,3 +1,13 @@
+/*
+ * Filename: booking.css
+ * Student : Xu Yan
+ * Student ID: mng2178
+ * Description:This stylesheet defines the layout and visual styling
+ * for the taxi booking client interface, including the form container,
+ * input fields, book now button, and dynamic reference display message.
+ */
+
+/*Global Styles */
 body {
     font-family: Arial, Helvetica, sans-serif;
     background: #f4f1f1;
@@ -22,7 +32,7 @@ h1, h2 {
     color: #e75480;
     letter-spacing: 1px;
 }
-
+/* form label and structure*/
 form label {
     display: block;
     margin-bottom: 10px;
@@ -40,12 +50,13 @@ form {
     display: flex;
     flex-direction: column;
 }
+/*Responsive Styling */
 @media (max-width: 600px) {
     .container {
         padding: 12px;
         margin: 20px 12px;
     }
-
+/* form input style*/
     form input[type="text"],
     form input[type="date"],
     form input[type="time"] {
@@ -64,13 +75,14 @@ form {
         padding: 10px 0;
     }
 }
+/* Highlight border when input field is focused */
 form input[type="text"]:focus,
 form input[type="date"]:focus,
 form input[type="time"]:focus {
     border: 1.5px solid #0077cc;
     outline: none;
 }
-
+/* 'Book now ' button*/
 button[type="submit"] {
     width: 100%;
     background:#ffcccc;
@@ -96,8 +108,10 @@ button[type="submit"]:active {
     padding: 18px 16px;
     border: 1.5px solid #ffcccc;
     border-radius: 6px;
-    background: #eaf6ff;
+    background:#f0f8ff;
     color: #222;
     font-size: 1.1em;
 }
-
+#reference.show {
+    display: block ;
+}

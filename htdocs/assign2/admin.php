@@ -1,4 +1,18 @@
 <?php
+/**
+* Filename:admin.php
+ * Student : Xu Yan
+ * Student ID: mng2178
+  * Description:
+  *     This PHP script handles both booking assignment and search for the admin interface.
+  *     It supports:
+  *       - POST: Assigning a booking reference by updating its status
+  *       - GET: Searching for a booking by reference, or
+  *              listing all unassigned bookings within the next 2 hours
+  *     The script returns JSON-encoded responses.
+ Notes:
+  *     - This script requires the sqlinfo.inc.php configuration file.
+  */
 header("Content-Type: application/json");
 include('../../files/sqlinfo.inc.php');
 
@@ -52,8 +66,8 @@ if  ($bsearch !== null && $bsearch !== '')  {
     $query = "
         SELECT * FROM booking
         WHERE status = 'unassigned'
-           AND pickup_date >= NOW()
-           AND pickup_date <= DATE_ADD(NOW(), INTERVAL 2 HOUR)
+            AND CONCAT(pickup_date, ' ', pickup_time)
+                       BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 2 HOUR)
         ORDER BY pickup_date, pickup_time
     ";
     $result = $mysqli->query($query);
